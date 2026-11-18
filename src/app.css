@@ -1,0 +1,634 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   Sous, design system: FROSTED (V15 foundation)
+   Source of truth: docs/frosted-ui-spec.md. Warm off-white glass over a clay
+   canvas in light mode; charcoal glass in dark mode. GREEN is the accent now
+   (deep #1f9c68, bright #37c98a), primary buttons are BLACK pills, CT blue is
+   retired as an accent. The --ct-blue token NAME survives (321 usages inherit)
+   but resolves to the green. Merchant Copy is retired: --font-merchant is
+   remapped to a Graphik Medium alias so every legacy usage inherits Graphik.
+   ========================================================================== */
+
+/* --- Licensed fonts (shipped locally under /public/fonts) -------------------
+   Graphik is licensed; Birds of Paradise is personal-use (confirm licensing
+   before production). Hanken Grotesk still loads via next/font (unused by the
+   Frosted tokens, kept so nothing 404s). */
+
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Graphik";
+  src: url("/fonts/Graphik-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* "Graphik Merchant": the alias family that retires the Merchant Copy pixel
+   font. var(--font-merchant) points here, so every legacy usage renders
+   Graphik Medium at normal weights and Semibold when it asked for bold,
+   with zero per-file changes. */
+@font-face {
+  font-family: "Graphik Merchant";
+  src: url("/fonts/Graphik-Medium.otf") format("opentype");
+  font-weight: 100 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Graphik Merchant";
+  src: url("/fonts/Graphik-Semibold.otf") format("opentype");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Merchant Copy stays registered (licence continuity) but NOTHING references
+   it any more; do not point new code at it. */
+
+/* ---------------------------------------------------------------------------
+   DARK FROSTED (default): charcoal backdrop, charcoal-glass panels, the same
+   green/amber/coral accents as light. Primary button inverts to off-white.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Surfaces */
+  --canvas: #1a1a1c; /* app backdrop */
+  --gallery-well: #121214;
+  --rail: #202023; /* board columns, quiet wells */
+  --card: #232326; /* panels / most cards */
+  --elevated: #2c2c30; /* raised charcoal cards + dark buttons */
+  --on-elevated: #ffffff; /* text ON --elevated: it is dark in BOTH themes */
+  --field: #26262a; /* form inputs (flips to white in light mode) */
+  --table-header: #1f1f22;
+  --rail-hover: #29292d;
+
+  /* Lines */
+  --border: #323236;
+  --hairline: rgba(244, 243, 241, 0.1);
+  --divider: #2b2b2f;
+  --bar-track: #303035;
+
+  /* Text */
+  --text: #f4f3f1;
+  --text-app-root: #eceae7;
+  --text-muted: #a6a49c;
+  --text-muted-2: #8a8880;
+  --soft-white: #f4f3f1; /* light chip surface, dark text on it */
+  --on-soft-white: #1c1c1e;
+
+  /* Accent: GREEN. --ct-blue keeps its NAME (the whole app styles with it)
+     but now resolves to the deep green, brightened a step in dark so small
+     text stays legible; --ct-blue-2 is the bright green. */
+  --ct-blue: #2eb37e;
+  --ct-blue-2: #37c98a;
+  --accent: #2eb37e;
+  --accent-soft: rgba(55, 201, 138, 0.16);
+  --alert: #e2b13f; /* warning amber (spec), was the old red-orange */
+  --danger: #e0685c; /* coral */
+  --info-bg: #1d2a24; /* "Sous says" blocks: soft green tint now, not blue */
+  --info-border: #2c473a;
+  --info-text: #63d6a4;
+  --info-text-2: #9ce8c6;
+
+  /* Frosted glass + primary button */
+  --glass: rgba(30, 30, 33, 0.55);
+  --glass-strong: rgba(30, 30, 33, 0.75);
+  --blur: 28px;
+  --btn-primary: #f4f3f1; /* dark mode: off-white pill, charcoal text */
+  --btn-primary-text: #1c1c1e;
+  --pill-active: #313136; /* active nav/segment pill surface (white in light) */
+
+  /* Shadows (soft, warm in light / deep in dark) */
+  --shadow-card: 0 3px 10px rgba(0, 0, 0, 0.28);
+  --shadow-raise: 0 6px 20px rgba(0, 0, 0, 0.35);
+  --shadow-panel: 0 24px 60px rgba(0, 0, 0, 0.5);
+
+  /* Lead temperature (dots only) */
+  --temp-hot: #e0685c;
+  --temp-warm: #e2b13f;
+  --temp-cold: #c9c6bc;
+
+  /* Category (vivid dot / brighter chip tint). Categorical data hues, not
+     accents; unchanged by the Frosted move. */
+  --cat-tech: #0f3bfd;
+  --cat-tech-2: #5b7cff;
+  --cat-publisher: #7a5cff;
+  --cat-publisher-2: #ad93ff;
+  --cat-finance: #1f6dff;
+  --cat-finance-2: #63a0ff;
+  --cat-law: #b4521e;
+  --cat-law-2: #ff8c52;
+  --cat-agency: #c0399b;
+  --cat-agency-2: #ff74c4;
+  --cat-creative: #0f8fae;
+  --cat-creative-2: #46cfe6;
+  --cat-other: #6b6862;
+  --cat-other-2: #b5b2a8;
+
+  /* Outreach stage dots (categorical, unchanged) */
+  --stage-new: #0f3bfd;
+  --stage-opened: #7a5cff;
+  --stage-replied: #ff5630;
+  --stage-booked: #12a5c9;
+  --stage-no-response: #c9c6bc;
+  --stage-lost: #9a978d;
+
+  /* Connection-strength meter ramp (sequential data encoding, blue by owner
+     decision, distinct from the green accent). Levels 4-5 brighten here so
+     the top steps stay legible on the charcoal surfaces; light mode keeps
+     the deep blues. */
+  --conn-1: #8ca0c8;
+  --conn-2: #5b7cff;
+  --conn-3: #3d5afe;
+  --conn-4: #6b82ff;
+  --conn-5: #8fa5ff;
+
+  /* Fixed dimensions */
+  --topbar-h: 60px;
+  --rail-w: 236px;
+  --kanban-col-w: 268px;
+  --drawer-w: 440px;
+
+  /* Radius: pill-dominant Frosted shapes */
+  --r-chip: 10px;
+  --r-card: 13px;
+  --r-button: 12px;
+  --r-lg: 16px; /* larger inputs, modals */
+  --r-pill: 999px;
+  --r-panel: 24px; /* floating panels (the rail, drawers) */
+
+  /* Legacy Apollo accent block: names kept, values remapped to Frosted.
+     (Zero live usages found for --primary/--success/--warning at rebuild
+     time; --danger is live and is the coral above.) */
+  --primary: #2eb37e; --primary-hover: #37c98a; --primary-active: #1f9c68; --primary-fg: #ffffff;
+  --primary-subtle: rgba(55, 201, 138, 0.14); --primary-border: rgba(55, 201, 138, 0.35);
+  --ai: #9d8df1; --ai-hover: #b4a6f7; --ai-subtle: #1e1936; --ai-border: #3a2f63;
+  --navy: #0b1524; --navy-fg: #e8ecf5; --navy-hover: #1b2c48;
+  --success: #2eb37e; --warning: #e2b13f;
+  --focus-ring: rgba(55, 201, 138, 0.3);
+}
+
+/* ---------------------------------------------------------------------------
+   LIGHT FROSTED (the reference palette). #eceae7 is the in-app page canvas so
+   content reads (the mock's #b8b7b3 clay is the OUTER backdrop tone, kept on
+   --gallery-well territory); panels are warm off-whites, cards white.
+   -------------------------------------------------------------------------- */
+:root[data-theme="light"] {
+  --canvas: #eceae7;
+  --gallery-well: #dcdad5;
+  --rail: #ececea; /* board columns */
+  --card: #ffffff;
+  --elevated: #1c1c1e; /* dark buttons stay dark, white text sits on them */
+  --on-elevated: #ffffff; /* same in light: --elevated never goes pale */
+  --field: #ffffff;
+  --table-header: #f4f3f1;
+  --rail-hover: #e6e4e0;
+
+  --border: #d9d7d2;
+  --hairline: rgba(28, 28, 30, 0.09);
+  --divider: #e7e6e3;
+  --bar-track: #dedcd7;
+
+  --text: #1c1c1e;
+  --text-app-root: #1d1d1f;
+  --text-muted: #54524b;
+  --text-muted-2: #8f8d88;
+  --soft-white: #1c1c1e; /* primary chip flips dark, light text on it */
+  --on-soft-white: #f7f6f4;
+
+  --ct-blue: #1f9c68; /* the deep green accent (owner decision, spec) */
+  --ct-blue-2: #37c98a;
+  --accent: #1f9c68;
+  --accent-soft: rgba(55, 201, 138, 0.14);
+  --alert: #c9911f; /* amber deepened a step so it reads on light surfaces */
+  --danger: #d05348;
+  --info-bg: #e7f4ec;
+  --info-border: #c5e6d3;
+  --info-text: #17734e;
+  --info-text-2: #0f5236;
+
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --btn-primary: #1c1c1e; /* BLACK pill, white text */
+  --btn-primary-text: #ffffff;
+  --pill-active: #ffffff;
+
+  --shadow-card: 0 3px 10px rgba(60, 58, 54, 0.06);
+  --shadow-raise: 0 6px 20px rgba(60, 58, 54, 0.08);
+  --shadow-panel: 0 24px 60px rgba(60, 58, 54, 0.16);
+
+  /* Connection meter: the deep-blue top steps read fine on white (1-3 are
+     shared with dark and inherit from :root). */
+  --conn-4: #2f3fd6;
+  --conn-5: #1f2aa8;
+
+  --primary: #1f9c68; --primary-hover: #1a8a5c; --primary-active: #167a51; --primary-fg: #ffffff;
+  --primary-subtle: #e7f4ec; --primary-border: #bfe5d2;
+  --ai: #6e56cf; --ai-hover: #5d46b8; --ai-subtle: #f1edfc; --ai-border: #dcd3f5;
+  --navy: #0b1524; --navy-fg: #e8ecf5; --navy-hover: #152238;
+  --success: #1f9c68; --warning: #c9911f;
+  --focus-ring: rgba(31, 156, 104, 0.25);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-rail: var(--rail);
+  --color-card: var(--card);
+  --color-elevated: var(--elevated);
+  --color-table-header: var(--table-header);
+  --color-border: var(--border);
+  --color-divider: var(--divider);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-soft-white: var(--soft-white);
+  --color-ct-blue: var(--ct-blue);
+  --color-accent: var(--accent);
+  --color-alert: var(--alert);
+
+  /* Font families: ALL Graphik now. --font-merchant resolves to the Graphik
+     Medium alias (Merchant Copy retired); --font-body moves off Hanken. */
+  --font-graphik: "Graphik", system-ui, sans-serif;
+  --font-merchant: "Graphik Merchant", "Graphik", system-ui, sans-serif;
+  --font-body: "Graphik", system-ui, sans-serif;
+  --font-script: "Birds of Paradise", cursive;
+
+  /* The ONE genuinely monospaced stack, for secrets read by human eyes: API
+     tokens, keys, DNS records. Everything else on this page is Graphik, which
+     is proportional and renders capital-I, lowercase-l and 1 near identically.
+     That ambiguity is not cosmetic: the Squarespace DKIM record was corrupted
+     by exactly this (a capital I retyped as lowercase l), and it cost days.
+     Any block a human might read a secret out of gets var(--font-mono), and a
+     copy button, so nobody has to squint at it in the first place. */
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--text-app-root);
+  font-family: var(--font-graphik);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Uppercase micro-labels (eyebrows, group headers, tab labels). Graphik
+   Medium, 12px floor, .6px to 1.8px tracking (spec). The old Merchant Copy
+   metrics (14px / .14em) are gone. */
+.eyebrow {
+  font-family: var(--font-merchant);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Body copy is Graphik now (all-Graphik owner decision). */
+.body-copy {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+@keyframes ctSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   Frosted helpers (foundation). Screen agents: build with these.
+   ============================================================ */
+
+/* Floating frosted panel (the rail, drawers, popovers). */
+.glass-panel {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Frosted card (board cards, KPI band). */
+.glass-card {
+  background: var(--glass-strong);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Small glass pill chip (search, credits, filters at rest). */
+.frosted-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  color: var(--text);
+}
+
+/* Primary action: BLACK pill in light, off-white in dark. Caps 12px. */
+.btn-primary-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--btn-primary);
+  color: var(--btn-primary-text);
+  border: none;
+  border-radius: var(--r-pill);
+  font-family: var(--font-graphik);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  white-space: nowrap;
+}
+
+/* Secondary / ghost pill: hairline border, muted caps. */
+.btn-ghost-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  font-family: var(--font-graphik);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Caps micro-label, 12px floor. */
+.micro-label {
+  font-family: var(--font-graphik);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Faint right-aligned count pill (rail counts, column counts). */
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Review-queue attention badge (the Sequences rail row): the amber twin of
+   .count-pill. Sends are sitting in the review queue awaiting a human confirm,
+   so it must read as "needs you", not blend in with the faint totals. */
+.review-attn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--alert) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
+  color: var(--alert);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* The "flash until i click into it" (Mia): a gentle 2s breathe, armed while the
+   queue holds items newer than this device's last visit to /sequences/review.
+   Reduced-motion users keep the static amber badge, never the animation. */
+@media (prefers-reduced-motion: no-preference) {
+  .review-attn-pulse {
+    animation: reviewBreathe 2s ease-in-out infinite;
+  }
+}
+
+@keyframes reviewBreathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.07);
+  }
+}
+
+/* ============================================================
+   Mobile (V5 #46, Mia 2026-07-03, documented PWA/mobile req).
+   The frosted rail becomes a floating drawer under 900px;
+   toolbars shed their labels; tables horizontally scroll
+   instead of crushing; panes tighten their padding.
+   ============================================================ */
+.rail-backdrop { display: none; }
+.rail-toggle { display: none; }
+
+@media (max-width: 900px) {
+  .app-rail {
+    position: fixed !important;
+    left: 10px;
+    top: calc(var(--topbar-h) + 2px);
+    bottom: 10px;
+    width: min(300px, 84vw) !important;
+    flex: none !important;
+    z-index: 80;
+    transform: translateX(calc(-100% - 48px));
+    transition: transform 0.25s ease;
+  }
+  html[data-rail-open] .app-rail { transform: translateX(0); }
+  html[data-rail-open] .rail-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: var(--topbar-h);
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 70;
+  }
+  .rail-toggle { display: inline-flex !important; }
+  .topbar-logo { width: auto !important; flex: 0 0 auto !important; }
+  .topbar-logo img { height: 30px !important; }
+  .topbar-crumb { display: none !important; }
+  .primary-action-label { display: none; }
+}
+
+@media (max-width: 760px) {
+  .view-pane { padding: 12px 12px 30px !important; }
+  .view-header { padding: 16px 14px 12px !important; }
+  .table-scroll { overflow-x: auto !important; }
+  .ct-grid { min-width: 660px; }
+  .co-grid { min-width: 620px; }
+  .seq-grid { min-width: 560px; }
+}
+
+/* Phone tier: tighten chrome further so nothing bleeds at small widths (Mia
+   V7: "optimised at half window at all times", + mobile). */
+@media (max-width: 560px) {
+  .view-header { padding: 14px 12px 10px !important; }
+  .view-pane { padding: 10px 10px 26px !important; }
+  .topbar-bar { gap: 9px !important; padding: 0 10px !important; }
+  .topbar-signout { padding: 0 9px !important; font-size: 12px !important; }
+}
+/* Phone: drop the quick-add "+" from the bar (every page has its own add). */
+@media (max-width: 430px) {
+  .topbar-plus { display: none !important; }
+}
+
+/* THE SHELL ON A PHONE (Mia, 2026-11-02: "make Sous compatible on the
+   mobile"). A real viewport height, so the bottom of a page is not hidden
+   behind Safari's toolbar; the home-indicator inset kept clear; and inputs
+   at 16px, the size under which iOS zooms the page on focus. The credits
+   pill goes: the top bar has no room for it beside the bell and avatar. */
+@supports (height: 100dvh) {
+  .app-shell { height: 100dvh !important; }
+}
+@media (max-width: 760px) {
+  .app-shell > .flex.min-h-0 { padding-bottom: max(12px, env(safe-area-inset-bottom)) !important; }
+  .topbar-credits { display: none !important; }
+  /* The correspondence panel: the thread alone; the contact column is on the record page. */
+  .corr-side { display: none !important; }
+}
+@media (max-width: 560px) {
+  .app-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), .app-shell select, .app-shell textarea { font-size: 16px !important; }
+}
+
+/* The brand logo ships as a white PNG. On light surfaces it would vanish, so
+   render it as a black silhouette in day mode: login (#19) and now the
+   transparent Frosted top row too. brightness(0) = solid black. */
+:root[data-theme="light"] .login-logo { filter: brightness(0); }
+:root[data-theme="light"] .topbar-logo img { filter: brightness(0); opacity: 0.88; }
+
+/* Dropdown panels: thin themed scrollbar; the native white block was
+   illegible on the dark theme (Mia's flag, 2026-07-03). */
+.menu-pop { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.menu-pop::-webkit-scrollbar { width: 8px; }
+.menu-pop::-webkit-scrollbar-track { background: transparent; }
+.menu-pop::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ---------------------------------------------------------------------------
+   EXPORT ADDITIONS. Sous is dark by default and light under
+   [data-theme="light"] (its settings toggle sets that attribute). Standalone,
+   with no toggle, follow the OS: light values when the OS asks for light and
+   nothing has forced data-theme="dark". Set data-theme on <html> to override.
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+  --canvas: #eceae7;
+  --gallery-well: #dcdad5;
+  --rail: #ececea; /* board columns */
+  --card: #ffffff;
+  --elevated: #1c1c1e; /* dark buttons stay dark, white text sits on them */
+  --on-elevated: #ffffff; /* same in light: --elevated never goes pale */
+  --field: #ffffff;
+  --table-header: #f4f3f1;
+  --rail-hover: #e6e4e0;
+
+  --border: #d9d7d2;
+  --hairline: rgba(28, 28, 30, 0.09);
+  --divider: #e7e6e3;
+  --bar-track: #dedcd7;
+
+  --text: #1c1c1e;
+  --text-app-root: #1d1d1f;
+  --text-muted: #54524b;
+  --text-muted-2: #8f8d88;
+  --soft-white: #1c1c1e; /* primary chip flips dark, light text on it */
+  --on-soft-white: #f7f6f4;
+
+  --ct-blue: #1f9c68; /* the deep green accent (owner decision, spec) */
+  --ct-blue-2: #37c98a;
+  --accent: #1f9c68;
+  --accent-soft: rgba(55, 201, 138, 0.14);
+  --alert: #c9911f; /* amber deepened a step so it reads on light surfaces */
+  --danger: #d05348;
+  --info-bg: #e7f4ec;
+  --info-border: #c5e6d3;
+  --info-text: #17734e;
+  --info-text-2: #0f5236;
+
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --btn-primary: #1c1c1e; /* BLACK pill, white text */
+  --btn-primary-text: #ffffff;
+  --pill-active: #ffffff;
+
+  --shadow-card: 0 3px 10px rgba(60, 58, 54, 0.06);
+  --shadow-raise: 0 6px 20px rgba(60, 58, 54, 0.08);
+  --shadow-panel: 0 24px 60px rgba(60, 58, 54, 0.16);
+
+  /* Connection meter: the deep-blue top steps read fine on white (1-3 are
+     shared with dark and inherit from :root). */
+  --conn-4: #2f3fd6;
+  --conn-5: #1f2aa8;
+
+  --primary: #1f9c68; --primary-hover: #1a8a5c; --primary-active: #167a51; --primary-fg: #ffffff;
+  --primary-subtle: #e7f4ec; --primary-border: #bfe5d2;
+  --ai: #6e56cf; --ai-hover: #5d46b8; --ai-subtle: #f1edfc; --ai-border: #dcd3f5;
+  --navy: #0b1524; --navy-fg: #e8ecf5; --navy-hover: #152238;
+  --success: #1f9c68; --warning: #c9911f;
+  --focus-ring: rgba(31, 156, 104, 0.25);
+}
+}
+
+html, body, #root { height: 100%; }
